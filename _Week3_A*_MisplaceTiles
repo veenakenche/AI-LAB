@@ -1,0 +1,79 @@
+import heapq
+
+
+goal = [[1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 0]]  # 0 = blank
+
+moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+
+
+def misplaced_tiles(state):
+    """h(n): number of misplaced tiles"""
+    h = 0
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] != 0 and state[i][j] != goal[i][j]:
+                h += 1
+    return h
+def get_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+
+def swap(state, i1, j1, i2, j2):
+    """Return a new state with swapped positions"""
+    new_state = [row[:] for row in state]
+    new_state[i1][j1], new_state[i2][j2] = new_state[i2][j2], new_state[i1][j1]
+    return new_state
+
+
+def a_star(start, heuristic):
+    open_list = []
+    heapq.heappush(open_list, (heuristic(start), 0, start, []))  # (f, g, state, path)
+    visited = set()
+
+    while open_list:
+        f, g, state, path = heapq.heappop(open_list)
+        state_tuple = tuple(tuple(row) for row in state)
+
+        if state == goal:
+            return path + [state]
+
+        if state_tuple in visited:
+            continue
+        visited.add(state_tuple)
+
+        i, j = get_blank(state)
+
+        for dx, dy in moves:
+            x, y = i + dx, j + dy
+            if 0 <= x < 3 and 0 <= y < 3:
+                new_state = swap(state, i, j, x, y)
+                h = heuristic(new_state)
+                heapq.heappush(open_list, (g + 1 + h, g + 1, new_state, path + [state]))
+
+    return None
+
+
+if __name__ == "__main__":
+    start = [[1, 2, 3],
+             [4, 0, 6],
+             [7, 5, 8]]
+
+    print("Solving with Misplaced Tiles Heuristic:")
+    solution1 = a_star(start, misplaced_tiles)
+    for step in solution1:
+        for row in step:
+            print(row)
+        print()
+
+    print("Solving with Manhattan Distance Heuristic:")
+    solution2 = a_star(start, manhattan_distance)
+    for step in solution2:
+        for row in step:
+            print(row)
+        print()
