@@ -71,9 +71,4 @@ if __name__ == "__main__":
             print(row)
         print()
 
-    print("Solving with Manhattan Distance Heuristic:")
-    solution2 = a_star(start, manhattan_distance)
-    for step in solution2:
-        for row in step:
-            print(row)
-        print()
+   
