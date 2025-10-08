@@ -1,0 +1,43 @@
+import random
+
+def cost(state):
+    attacks = 0
+    n = len(state)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if state[i] == state[j]:
+                attacks += 1
+            elif abs(state[i] - state[j]) == abs(i - j):
+                attacks += 1
+    return attacks
+
+def generate_neighbors(state):
+    neighbors = []
+    n = len(state)
+    for i in range(n):
+        for j in range(i + 1, n):
+            new_state = state.copy()
+            new_state[i], new_state[j] = new_state[j], new_state[i]
+            neighbors.append(new_state)
+    return neighbors
+
+def hill_climbing():
+    current = [random.randint(0, 3) for _ in range(4)]
+    current_value = cost(current)
+
+    while True:
+        neighbors = generate_neighbors(current)
+        best_neighbor = min(neighbors, key=cost)
+        best_value = cost(best_neighbor)
+
+        if best_value >= current_value:
+            print("Reached local optimum.")
+            return current, current_value
+
+        current = best_neighbor
+        current_value = best_value
+
+if __name__ == "__main__":
+    solution, attacks = hill_climbing()
+    print("Final State:", solution)
+    print("Attacking pairs:", attacks)
